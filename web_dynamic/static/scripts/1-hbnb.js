@@ -1,4 +1,4 @@
-/* Script that listen for changes on each INPUT checkbox tag */
+/* Select some Amenities to be comfortable! */
 $('document').ready(function () {
    const amenitiesId = {};
    $('INPUT[type="checkbox"]').click(function () {
