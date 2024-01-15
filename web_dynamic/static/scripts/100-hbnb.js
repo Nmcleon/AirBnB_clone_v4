@@ -1,8 +1,8 @@
-/* API status */
+/* Funcionality */
 $('document').ready(function () {
-  /* JavaScript script (static/scripts/1-hbnb.js): */
+  /* Listens for changes on each amenities INPUT */
   const amenitiesId = {};
-  $('INPUT[type="checkbox"]').click(function () {
+  $('.amenities INPUT[type="checkbox"]').click(function () {
     if ($(this).prop('checked')) {
       amenitiesId[$(this).attr('data-id')] = $(this).attr('data-name');
     } else {
@@ -10,11 +10,34 @@ $('document').ready(function () {
     }
     $('.amenities h4').text(Object.values(amenitiesId).join(', '));
   });
-  /* Update the API entry point (api/v1/app.py) by replacing the current
-  CORS CORS(app, origins="0.0.0.0") by CORS(app, resources={r"/api/v1/*": {"origins": "*"}}).
-Change the route 1-hbnb to 2-hbnb in the file 2-hbnb.py (based on 1-hbnb.py)
-Create a new template 2-hbnb.html (based on 1-hbnb.html) and update it
-  */
+  /* Listens for changes on each states */
+  const statesId = {};
+  const citiesId = {};
+  const citiesStates = {};
+  $('.locations h2 INPUT[type="checkbox"]').click(function () {
+    if ($(this).prop('checked')) {
+      statesId[$(this).attr('data-id')] = $(this).attr('data-name');
+      citiesStates[$(this).attr('data-id')] = $(this).attr('data-name');
+    } else {
+      delete statesId[$(this).attr('data-id')];
+      delete citiesStates[$(this).attr('data-id')];
+    }
+    $('.locations h4').text(Object.values(citiesStates).join(', '));
+    // Object.assign(citiesStates, statesId, citiesId);
+    // $('.locations h4').text(Object.values(citiesStates).join(', '));
+  });
+  /* Listens for changes on each cities INPUT */
+  $('.locations ul li ul INPUT[type="checkbox"]').click(function () {
+    if ($(this).prop('checked')) {
+      citiesId[$(this).attr('data-id')] = $(this).attr('data-name');
+      citiesStates[$(this).attr('data-id')] = $(this).attr('data-name');
+    } else {
+      delete citiesId[$(this).attr('data-id')];
+      delete citiesStates[$(this).attr('data-id')];
+    }
+    $('.locations h4').text(Object.values(citiesStates).join(', '));
+  });
+
   const callout = function () {
     $.ajax({
       type: 'get',
@@ -36,9 +59,7 @@ Create a new template 2-hbnb.html (based on 1-hbnb.html) and update it
     });
   };
   callout();
-  /*
-    Retrieve all places and create a articule tag
-  */
+  
   const getPlaces = function () {
     $.ajax({
       type: 'POST',
@@ -50,25 +71,25 @@ Create a new template 2-hbnb.html (based on 1-hbnb.html) and update it
         $.each(places, function (index, place) {
           $('.places').append(
             '<article>' +
-              '<div class="title_box">' +
-              '<h2>' + place.name + '</h2>' +
-              '<div class="price_by_night">' + place.price_by_night +
-              '</div>' +
-              '</div>' +
-              '<div class="information">' +
-              '<div class="max_guest">' +
-              '<br />' + place.max_guest + ' Guests' +
-              '</div>' +
-              '<div class="number_rooms">' +
-              '<br />' + place.number_rooms + ' Bedrooms' +
-              '</div>' +
-              '<div class="number_bathrooms">' +
-              '<br />' + place.number_bathrooms + ' Bathroom' +
-              '</div>' +
-              '</div>' +
-              '<div class="description">' + place.description +
-              '</div>' +
-              '</article>');
+            '<div class="title_box">' +
+            '<h2>' + place.name + '</h2>' +
+            '<div class="price_by_night">' + '$' + place.price_by_night +
+            '</div>' +
+            '</div>' +
+            '<div class="information">' +
+            '<div class="max_guest">' +
+            '<br />' + place.max_guest + ' Guests' +
+            '</div>' +
+            '<div class="number_rooms">' +
+            '<br />' + place.number_rooms + ' Bedrooms' +
+            '</div>' +
+            '<div class="number_bathrooms">' +
+            '<br />' + place.number_bathrooms + ' Bathroom' +
+            '</div>' +
+            '</div>' +
+            '<div class="description">' + place.description +
+            '</div>' +
+            '</article>');
         });
       }
     });
@@ -82,7 +103,11 @@ Create a new template 2-hbnb.html (based on 1-hbnb.html) and update it
       type: 'POST',
       contentType: 'application/json',
       url: 'http://localhost:5001/api/v1/places_search/',
-      data: JSON.stringify({ amenities: Object.keys(amenitiesId) }),
+      data: JSON.stringify({
+        amenities: Object.keys(amenitiesId),
+        states: Object.keys(statesId),
+        cities: Object.keys(citiesId)
+      }),
       dataType: 'json',
       success: function (places) {
         $('.places').empty();
@@ -112,4 +137,3 @@ Create a new template 2-hbnb.html (based on 1-hbnb.html) and update it
       }
     });
   });
-});
